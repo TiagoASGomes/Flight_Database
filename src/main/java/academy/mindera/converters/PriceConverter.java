@@ -1,25 +1,31 @@
 package academy.mindera.converters;
 
-import academy.mindera.dto.PriceDTO;
-import academy.mindera.models.Prices;
+import academy.mindera.dto.price.CreatePriceDto;
+import academy.mindera.dto.price.GetPriceDTO;
+import academy.mindera.models.Price;
+import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.List;
+
+@ApplicationScoped
 public class PriceConverter {
 
-    public static PriceDTO toDTO(Prices price){
-
-        PriceDTO dto = new PriceDTO();
-        dto.setId(price.getId());
-        dto.setClassName(price.getClassName());
-        dto.setPrice(price.getPrice());
-        return dto;
+    public Price fromCreateDtoToEntity(CreatePriceDto createPriceDto) {
+        return Price.builder()
+                .className(createPriceDto.className())
+                .price(createPriceDto.price())
+                .build();
     }
 
-    public static Prices fromDTO(PriceDTO dto){
+    public GetPriceDTO fromEntityToGetDto(Price price) {
+        return new GetPriceDTO(price.getId(),
+                price.getClassName(),
+                price.getPrice());
+    }
 
-        Prices price = new Prices();
-        price.setId(dto.getId());
-        price.setClassName(dto.getClassName());
-        price.setPrice(dto.getPrice());
-        return price;
+    public List<GetPriceDTO> fromEntityListToGetDtoList(List<Price> prices) {
+        return prices.stream()
+                .map(this::fromEntityToGetDto)
+                .toList();
     }
 }

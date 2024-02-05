@@ -1,4 +1,4 @@
-package academy.mindera.exceptions;
+package academy.mindera.exceptions.plane;
 
 public class PlaneNotFoundException extends PlaneException {
 

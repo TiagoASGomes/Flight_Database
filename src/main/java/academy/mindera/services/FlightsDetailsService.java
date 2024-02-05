@@ -1,126 +1,88 @@
 package academy.mindera.services;
 
 
-import academy.mindera.exceptions.FlightNotFoundException;
-import academy.mindera.exceptions.SeatAlreadyBookedException;
-import academy.mindera.models.Booking;
-import academy.mindera.models.Flights;
-import academy.mindera.models.Planes;
-import academy.mindera.repositories.BookingRepository;
+import academy.mindera.converters.FlightConverter;
+import academy.mindera.dto.flight.CreateFlightDTO;
+import academy.mindera.dto.flight.GetFlightDto;
+import academy.mindera.exceptions.flight.FlightFullException;
+import academy.mindera.exceptions.flight.FlightNotFoundException;
+import academy.mindera.exceptions.plane.PlaneNotFoundException;
+import academy.mindera.exceptions.price.PriceNotFoundException;
+import academy.mindera.models.Flight;
+import academy.mindera.models.Plane;
+import academy.mindera.models.Price;
 import academy.mindera.repositories.FlightsRepository;
+import academy.mindera.services.interfaces.PlaneService;
+import academy.mindera.services.interfaces.PriceService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @ApplicationScoped
 @Transactional
 public class FlightsDetailsService implements FlightsDetailsServiceI {
+    private final int PAGE_SIZE = 10;
 
     @Inject
-    FlightsRepository flightsDetailsRepository;
+    private FlightsRepository flightsDetailsRepository;
+    @Inject
+    private FlightConverter flightConverter;
+    @Inject
+    private PriceService priceService;
+    @Inject
+    private PlaneService planeService;
 
     @Override
-    public void bookSeat(Long flightId, String seatNumber) throws SeatAlreadyBookedException, FlightNotFoundException {
-        Flights flight = flightsDetailsRepository.findByIdOptional(flightId).orElseThrow(() -> new FlightNotFoundException("Flight with ID " + flightId + "not found."));
-
-        List<String> bookedSeats = getBookedSeatsForFlight(flightId);
-
-        if (bookedSeats.contains(seatNumber)){
-            throw new SeatAlreadyBookedException("Seat " + seatNumber + "is already booked on flight" + flightId);
-        }
+    public List<GetFlightDto> findAllFlights(int page) {
+        return flightConverter.fromEntityListToGetDtoList(flightsDetailsRepository.findAll().page(page, PAGE_SIZE).list());
     }
 
     @Override
-    public void saveFlight(Flights flight){
-        flightsDetailsRepository.persist(flight);
+    public GetFlightDto findFlightById(Long id) throws FlightNotFoundException {
+        return flightConverter.fromEntityToGetDto(findById(id));
     }
 
     @Override
-    public List<Flights> findAllFlights(){
-        return flightsDetailsRepository.listAll();
+    public CreateFlightDTO saveFlight(CreateFlightDTO flight) throws PlaneNotFoundException, PriceNotFoundException {
+        Plane plane = planeService.findById(flight.plane());
+        Set<Price> prices = priceService.findByIds(flight.prices());
+        flightsDetailsRepository.persist(flightConverter.fromCreateDtoToEntity(flight, plane, prices));
+        return flight;
     }
 
     @Override
-    public Flights findFlightById(long id) throws FlightNotFoundException {
-        return flightsDetailsRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException("Plane with ID " + id + " not found."));
+    public GetFlightDto updateFlight(CreateFlightDTO flight, Long id) throws FlightNotFoundException, PlaneNotFoundException, PriceNotFoundException {
+        Flight dbFlight = findById(id);
+        dbFlight.setOrigin(flight.origin());
+        dbFlight.setDestination(flight.destination());
+        dbFlight.setDuration(flight.duration());
+        dbFlight.setDateOfFlight(flight.dateOfFlight());
+        dbFlight.setPlane(planeService.findById(flight.plane()));
+        dbFlight.setPrices(priceService.findByIds(flight.prices()));
+        flightsDetailsRepository.persist(dbFlight);
+        return flightConverter.fromEntityToGetDto(dbFlight);
     }
 
     @Override
-    public void deleteFlight(long id){
+    public void deleteFlight(Long id) throws FlightNotFoundException {
+        findById(id);
         flightsDetailsRepository.deleteById(id);
     }
 
     @Override
-    public void updateFlight(Flights flight) {
-        Flights existingFlight = flightsDetailsRepository.findById(flight.getId());
-        if (existingFlight != null){
-            existingFlight.setOrigin(flight.getOrigin());
-            existingFlight.setDestination(flight.getDestination());
-            existingFlight.setDuration(flight.getDuration());
-            existingFlight.setDateOfFlight(flight.getDateOfFlight());
-            existingFlight.setId(flight.getId());
-
-            flightsDetailsRepository.persist(existingFlight);
-        }
+    public Flight findById(Long id) throws FlightNotFoundException {
+        return flightsDetailsRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException("Flight with ID " + id + " not found."));
     }
 
     @Override
-    public List<String> getAvailableSeats(long flightId) throws FlightNotFoundException {
-        Flights flight = findFlightById(flightId);
-
-        // logic that determines available seats
-        if (flight == null){
-            return Collections.emptyList();
+    public void checkIfFullCapacity(Long flightId, int amountToCheckFor) throws FlightNotFoundException, FlightFullException {
+        Flight flight = findById(flightId);
+        if (flight.getBookings().size() + amountToCheckFor >= flight.getPlane().getPeopleCapacity()) {
+            throw new FlightFullException("Flight with ID " + flightId + " is full.");
         }
-
-        int totalSeats = getTotalSeatsForFlight(flight);
-        List<String> bookedSeats = getBookedSeatsForFlight(flightId);
-
-        List<String> availableSeats = new ArrayList<>();
-
-        for (int seatNumber = 1; seatNumber <= totalSeats; seatNumber++){
-
-            String seat = "Seat: " + seatNumber;
-            if (!bookedSeats.contains(seat)) {
-                availableSeats.add(seat);
-            }
-        }
-        return availableSeats;
-    }
-
-    @Override
-    public int getTotalSeatsForFlight(Flights flight) {
-
-        if (flight == null || flight.getPlane() == null) {
-            return 0;
-        }
-
-        Planes plane = flight.getPlane();
-
-        return plane.getPeopleCapacity();
-    }
-
-    @Inject
-    BookingRepository bookingRepository;
-    @Override
-    public List<String> getBookedSeatsForFlight(long flightId) throws FlightNotFoundException {
-
-        Flights flight = findFlightById(flightId);
-        if (flight == null){
-            return Collections.emptyList();
-        }
-
-        List<Booking> bookings = bookingRepository.findByFlight(flight);
-        return bookings.stream()
-                .map(Booking::getSeatNumber)
-                .collect(Collectors.toList());
-
-
     }
 
 

@@ -1,27 +1,29 @@
 package academy.mindera.services;
 
-import academy.mindera.exceptions.FlightNotFoundException;
-import academy.mindera.exceptions.SeatAlreadyBookedException;
-import academy.mindera.models.Flights;
+import academy.mindera.dto.flight.CreateFlightDTO;
+import academy.mindera.dto.flight.GetFlightDto;
+import academy.mindera.exceptions.flight.FlightFullException;
+import academy.mindera.exceptions.flight.FlightNotFoundException;
+import academy.mindera.exceptions.plane.PlaneNotFoundException;
+import academy.mindera.exceptions.price.PriceNotFoundException;
+import academy.mindera.models.Flight;
 
 import java.util.List;
 
 public interface FlightsDetailsServiceI {
 
-    void bookSeat(Long flightId, String seatNumber) throws SeatAlreadyBookedException, FlightNotFoundException;
-    void saveFlight(Flights flight);
 
-    List<Flights> findAllFlights();
+    CreateFlightDTO saveFlight(CreateFlightDTO flight) throws PlaneNotFoundException, PriceNotFoundException;
 
-    Flights findFlightById(long id) throws FlightNotFoundException;
+    List<GetFlightDto> findAllFlights(int page);
 
-    void deleteFlight(long id);
+    GetFlightDto findFlightById(Long id) throws FlightNotFoundException;
 
-    void updateFlight(Flights flight);
+    void deleteFlight(Long id) throws FlightNotFoundException;
 
-    List<String> getAvailableSeats(long flightId) throws FlightNotFoundException;
+    GetFlightDto updateFlight(CreateFlightDTO flight, Long id) throws FlightNotFoundException, PlaneNotFoundException, PriceNotFoundException;
 
-    int getTotalSeatsForFlight(Flights flight);
+    Flight findById(Long id) throws FlightNotFoundException;
 
-    List<String> getBookedSeatsForFlight(long flightId) throws FlightNotFoundException;
+    void checkIfFullCapacity(Long flightId, int amountToCheckFor) throws FlightNotFoundException, FlightFullException;
 }

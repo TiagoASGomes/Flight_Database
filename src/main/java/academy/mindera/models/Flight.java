@@ -21,6 +21,7 @@ public class Flight {
     private String destination;
     private int duration;
     private LocalDateTime dateOfFlight;
+    private int availableSeats;
     @ManyToOne(fetch = FetchType.EAGER)
     private Plane plane;
     @ManyToMany

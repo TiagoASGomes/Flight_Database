@@ -15,6 +15,9 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
+import static academy.mindera.util.Messages.NO_PRICE_ID;
+import static academy.mindera.util.Messages.PRICE_IN_USE;
+
 @ApplicationScoped
 @Transactional
 public class PriceServiceImpl implements PriceService {
@@ -66,13 +69,13 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public Price findById(Long id) throws PriceNotFoundException {
-        return pricesRepository.findByIdOptional(id).orElseThrow(() -> new PriceNotFoundException("message"));
+        return pricesRepository.findByIdOptional(id).orElseThrow(() -> new PriceNotFoundException(NO_PRICE_ID + id));
     }
 
 
     private void checkIfPriceIsInUse(Price price) throws PriceInUseException {
         if (price.getFlights() != null && !price.getFlights().isEmpty()) {
-            throw new PriceInUseException("Price is in use");
+            throw new PriceInUseException(PRICE_IN_USE);
         }
     }
 }

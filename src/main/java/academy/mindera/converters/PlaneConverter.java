@@ -13,9 +13,9 @@ public class PlaneConverter {
 
     public Plane fromCreateDtoToEntity(CreatePlaneDTO dto) {
         return Plane.builder()
-                .rows(dto.rows())
-                .columns(dto.columns())
-                .peopleCapacity(dto.rows() * dto.columns())
+                .planeRows(dto.planeRows())
+                .seatsPerRow(dto.seatsPerRow())
+                .peopleCapacity(dto.planeRows() * dto.seatsPerRow())
                 .luggageCapacity(dto.luggageCapacity())
                 .companyOwner(dto.companyOwner())
                 .modelName(dto.modelName())

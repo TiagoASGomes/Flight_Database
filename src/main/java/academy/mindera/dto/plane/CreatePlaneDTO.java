@@ -7,7 +7,7 @@ public record CreatePlaneDTO(
         String companyOwner,
 
         String modelName,
-        int rows,
-        int columns
+        int planeRows,
+        int seatsPerRow
 ) {
 }

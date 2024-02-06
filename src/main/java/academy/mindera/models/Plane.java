@@ -13,8 +13,6 @@ import java.util.Set;
 @Builder
 @Table(name = "planes")
 public class Plane {
-    @OneToMany(mappedBy = "plane")
-    Set<Flight> flights;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,9 +20,11 @@ public class Plane {
     private int luggageCapacity;
     private String companyOwner;
     private String modelName;
-    private int rows;
-    private int columns;
+    private int planeRows;
+    private int seatsPerRow;
     private boolean discontinued;
+    @OneToMany(mappedBy = "plane")
+    Set<Flight> flights;
 }
 
 

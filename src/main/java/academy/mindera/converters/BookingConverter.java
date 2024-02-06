@@ -18,13 +18,12 @@ public class BookingConverter {
     private PriceConverter priceConverter;
 
     public GetBookingDto fromEntityToGetDto(Booking booking) {
-        //TODO seat number
         return new GetBookingDto(
                 booking.getId(),
                 booking.getFName(),
                 booking.getEmail(),
                 booking.getPhone(),
-                "1",
+                booking.getSeatNumber(),
                 flightConverter.fromEntityToGetDto(booking.getFlight()),
                 priceConverter.fromEntityToGetDto(booking.getPrice())
         );

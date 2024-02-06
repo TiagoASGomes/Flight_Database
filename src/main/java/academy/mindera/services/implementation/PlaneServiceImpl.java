@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
+import static academy.mindera.util.Messages.NO_PLANE_ID;
+
 @ApplicationScoped
 @Transactional
 public class PlaneServiceImpl implements PlaneService {
@@ -43,9 +45,9 @@ public class PlaneServiceImpl implements PlaneService {
     @Override
     public GetPlaneDTO update(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException {
         Plane dbPlane = findById(id);
-        dbPlane.setRows(plane.rows());
-        dbPlane.setColumns(plane.columns());
-        dbPlane.setPeopleCapacity(plane.rows() * plane.columns());
+        dbPlane.setPlaneRows(plane.planeRows());
+        dbPlane.setSeatsPerRow(plane.seatsPerRow());
+        dbPlane.setPeopleCapacity(plane.planeRows() * plane.seatsPerRow());
         dbPlane.setLuggageCapacity(plane.luggageCapacity());
         dbPlane.setCompanyOwner(plane.companyOwner());
         dbPlane.setModelName(plane.modelName());
@@ -62,6 +64,6 @@ public class PlaneServiceImpl implements PlaneService {
 
     @Override
     public Plane findById(Long id) throws PlaneNotFoundException {
-        return planeRepository.findByIdOptional(id).orElseThrow(() -> new PlaneNotFoundException("Plane with ID " + id + " not found."));
+        return planeRepository.findByIdOptional(id).orElseThrow(() -> new PlaneNotFoundException(NO_PLANE_ID + id));
     }
 }

@@ -20,6 +20,9 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static academy.mindera.util.Messages.FULL_FLIGHT;
+import static academy.mindera.util.Messages.NO_BOOKING_ID;
+
 @ApplicationScoped
 public class BookingServiceImpl implements BookingService {
     private static final int PAGE_SIZE = 10;
@@ -46,12 +49,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<GetBookingDto> createList(List<CreateBookingDTO> booking) throws FlightNotFoundException, PriceNotFoundException, FlightFullException {
         List<GetBookingDto> bookingList = new ArrayList<>();
-        for (CreateBookingDTO BookingDTO : booking) {
-            if (flightService.checkIfFullCapacity(BookingDTO.flightId())) {
+        for (CreateBookingDTO bookingDTO : booking) {
+            if (flightService.checkIfFullCapacity(bookingDTO.flightId(), getOccupiedSeats(flightService.findById(bookingDTO.flightId())))) {
                 bookingList.forEach(bookingEntity -> bookingRepository.deleteById(bookingEntity.id()));
-                throw new FlightFullException("Flight is full");
+                updateAllFlights(bookingList);
+                throw new FlightFullException(FULL_FLIGHT);
             }
-            bookingList.add(create(BookingDTO));
+            bookingList.add(create(bookingDTO));
         }
         return bookingList;
     }
@@ -62,7 +66,8 @@ public class BookingServiceImpl implements BookingService {
         Flight flight = flightService.findById(booking.flightId());
         Booking newBooking = bookingConverter.fromCreateDtoToEntity(booking, flight, price);
         newBooking.setSeatNumber(calcSeatNumber(flight));
-        bookingRepository.persist(newBooking);
+        bookingRepository.persistAndFlush(newBooking);
+        flightService.updateAvailableSeats(flight.getId(), getOccupiedSeats(flight));
         return bookingConverter.fromEntityToGetDto(newBooking);
     }
 
@@ -85,17 +90,28 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking findById(Long id) throws BookingNotFoundException {
-        return bookingRepository.findByIdOptional(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+        return bookingRepository.findByIdOptional(id).orElseThrow(() -> new BookingNotFoundException(NO_BOOKING_ID + id));
     }
 
 
     private String calcSeatNumber(Flight flight) {
-        long nextSeatNumber = bookingRepository.count("flight", flight) + 1;
-        long row = (nextSeatNumber - 1) / flight.getPlane().getColumns() + 1;
-        long column = (nextSeatNumber - 1) % flight.getPlane().getColumns();
+        long nextSeatNumber = getOccupiedSeats(flight) + 1;
+        long row = (nextSeatNumber - 1) / flight.getPlane().getSeatsPerRow() + 1;
+        long column = (nextSeatNumber - 1) % flight.getPlane().getSeatsPerRow();
 
         char columnLetter = (char) ('A' + column);
 
         return row + "" + columnLetter;
+    }
+
+    private void updateAllFlights(List<GetBookingDto> bookingList) throws FlightNotFoundException {
+        for (GetBookingDto booking : bookingList) {
+            flightService.updateAvailableSeats(booking.flight().id(), getOccupiedSeats(flightService.findById(booking.flight().id())));
+        }
+    }
+
+    private long getOccupiedSeats(Flight flight) {
+        return bookingRepository.count("flight", flight);
+
     }
 }

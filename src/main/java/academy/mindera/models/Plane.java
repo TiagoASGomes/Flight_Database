@@ -22,6 +22,8 @@ public class Plane {
     private int luggageCapacity;
     private String companyOwner;
     private String modelName;
+    private int rows;
+    private int columns;
     private boolean discontinued;
 }
 

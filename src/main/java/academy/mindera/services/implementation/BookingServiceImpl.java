@@ -61,6 +61,7 @@ public class BookingServiceImpl implements BookingService {
         Price price = priceService.findById(booking.priceId());
         Flight flight = flightService.findById(booking.flightId());
         Booking newBooking = bookingConverter.fromCreateDtoToEntity(booking, flight, price);
+        newBooking.setSeatNumber(calcSeatNumber(flight));
         bookingRepository.persist(newBooking);
         return bookingConverter.fromEntityToGetDto(newBooking);
     }
@@ -87,4 +88,14 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findByIdOptional(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
     }
 
+
+    private String calcSeatNumber(Flight flight) {
+        long nextSeatNumber = bookingRepository.count("flight", flight) + 1;
+        long row = (nextSeatNumber - 1) / flight.getPlane().getColumns() + 1;
+        long column = (nextSeatNumber - 1) % flight.getPlane().getColumns();
+
+        char columnLetter = (char) ('A' + column);
+
+        return row + "" + columnLetter;
+    }
 }

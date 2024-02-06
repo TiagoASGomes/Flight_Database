@@ -43,7 +43,9 @@ public class PlaneServiceImpl implements PlaneService {
     @Override
     public GetPlaneDTO update(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException {
         Plane dbPlane = findById(id);
-        dbPlane.setPeopleCapacity(plane.peopleCapacity());
+        dbPlane.setRows(plane.rows());
+        dbPlane.setColumns(plane.columns());
+        dbPlane.setPeopleCapacity(plane.rows() * plane.columns());
         dbPlane.setLuggageCapacity(plane.luggageCapacity());
         dbPlane.setCompanyOwner(plane.companyOwner());
         dbPlane.setModelName(plane.modelName());

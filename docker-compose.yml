@@ -2,23 +2,25 @@ version: '3.7'
 
 services:
   mysql_db:
-    image: mysql:8.3.0
+    image: mysql:8.0
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: mysecretpassword
-      MYSQL_DATABASE: planes
-    restart: unless-stopped
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: flights
+    restart: always
   flight_app:
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/planes
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/flights
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+      - SPRING_DATASOURCE_PASSWORD=secret
     ports:
-      - 8081:8081
+      - "8081:8081"
     restart: on-failure
     links:
       - mysql_db
+volumes:
+  mysql_db_data:

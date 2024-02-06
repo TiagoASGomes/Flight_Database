@@ -1,7 +1,6 @@
 package academy.mindera.converters;
 
 import academy.mindera.dto.plane.CreatePlaneDTO;
-import academy.mindera.dto.plane.GetCreatedPlaneDto;
 import academy.mindera.dto.plane.GetPlaneDTO;
 import academy.mindera.models.Plane;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,13 +38,4 @@ public class PlaneConverter {
                 .toList();
     }
 
-    public GetCreatedPlaneDto fromEntityToGetCreatedDto(Plane plane) {
-        return new GetCreatedPlaneDto(
-                plane.getPeopleCapacity(),
-                plane.getLuggageCapacity(),
-                plane.getCompanyOwner(),
-                plane.getModelName(),
-                plane.isDiscontinued()
-        );
-    }
 }

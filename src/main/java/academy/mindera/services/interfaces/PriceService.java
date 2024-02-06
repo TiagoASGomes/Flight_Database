@@ -10,17 +10,18 @@ import java.util.List;
 import java.util.Set;
 
 public interface PriceService {
-    List<GetPriceDTO> findAllPrices(int page);
+    List<GetPriceDTO> getAll(int page);
 
-    GetPriceDTO findPriceById(Long id);
+    GetPriceDTO getById(Long id);
 
-    CreatePriceDto savePrice(CreatePriceDto price);
+    GetPriceDTO create(CreatePriceDto price);
 
-    GetPriceDTO updatePrice(CreatePriceDto price, Long id) throws PriceNotFoundException;
+    Set<Price> create(Set<CreatePriceDto> price);
 
-    void deletePrice(Long id) throws PriceNotFoundException, PriceInUseException;
+    GetPriceDTO update(CreatePriceDto price, Long id) throws PriceNotFoundException;
+
+    void delete(Long id) throws PriceNotFoundException, PriceInUseException;
 
     Price findById(Long id) throws PriceNotFoundException;
 
-    Set<Price> findByIds(List<Long> ids) throws PriceNotFoundException;
 }

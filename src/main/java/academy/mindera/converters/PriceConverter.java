@@ -6,6 +6,8 @@ import academy.mindera.models.Price;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class PriceConverter {
@@ -27,5 +29,11 @@ public class PriceConverter {
         return prices.stream()
                 .map(this::fromEntityToGetDto)
                 .toList();
+    }
+
+    public Set<Price> fromCreateDtoListToEntityList(Set<CreatePriceDto> price) {
+        return price.stream()
+                .map(this::fromCreateDtoToEntity)
+                .collect(Collectors.toSet());
     }
 }

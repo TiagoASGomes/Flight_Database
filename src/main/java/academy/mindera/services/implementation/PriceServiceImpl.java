@@ -12,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,23 +25,31 @@ public class PriceServiceImpl implements PriceService {
     private PriceConverter priceConverter;
 
     @Override
-    public List<GetPriceDTO> findAllPrices(int page) {
+    public List<GetPriceDTO> getAll(int page) {
         return priceConverter.fromEntityListToGetDtoList(pricesRepository.findAll().page(page, PAGE_SIZE).list());
     }
 
     @Override
-    public GetPriceDTO findPriceById(Long id) {
+    public GetPriceDTO getById(Long id) {
         return priceConverter.fromEntityToGetDto(pricesRepository.findById(id));
     }
 
     @Override
-    public CreatePriceDto savePrice(CreatePriceDto price) {
-        pricesRepository.persist(priceConverter.fromCreateDtoToEntity(price));
-        return price;
+    public GetPriceDTO create(CreatePriceDto price) {
+        Price priceEntity = priceConverter.fromCreateDtoToEntity(price);
+        pricesRepository.persist(priceEntity);
+        return priceConverter.fromEntityToGetDto(priceEntity);
     }
 
     @Override
-    public GetPriceDTO updatePrice(CreatePriceDto price, Long id) throws PriceNotFoundException {
+    public Set<Price> create(Set<CreatePriceDto> price) {
+        Set<Price> prices = priceConverter.fromCreateDtoListToEntityList(price);
+        pricesRepository.persist(prices);
+        return prices;
+    }
+
+    @Override
+    public GetPriceDTO update(CreatePriceDto price, Long id) throws PriceNotFoundException {
         Price existingPrice = findById(id);
         existingPrice.setClassName(price.className());
         existingPrice.setPrice(price.price());
@@ -51,7 +58,7 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public void deletePrice(Long id) throws PriceNotFoundException, PriceInUseException {
+    public void delete(Long id) throws PriceNotFoundException, PriceInUseException {
         Price price = findById(id);
         checkIfPriceIsInUse(price);
         pricesRepository.deleteById(id);
@@ -62,14 +69,6 @@ public class PriceServiceImpl implements PriceService {
         return pricesRepository.findByIdOptional(id).orElseThrow(() -> new PriceNotFoundException("message"));
     }
 
-    @Override
-    public Set<Price> findByIds(List<Long> ids) throws PriceNotFoundException {
-        Set<Price> result = new HashSet<>();
-        for (Long id : ids) {
-            result.add(findById(id));
-        }
-        return result;
-    }
 
     private void checkIfPriceIsInUse(Price price) throws PriceInUseException {
         if (price.getFlights() != null && !price.getFlights().isEmpty()) {

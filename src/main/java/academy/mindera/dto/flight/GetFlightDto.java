@@ -1,6 +1,9 @@
 package academy.mindera.dto.flight;
 
 import academy.mindera.dto.plane.GetPlaneDTO;
+import academy.mindera.dto.price.GetPriceDTO;
+
+import java.util.List;
 
 public record GetFlightDto(
         long id,
@@ -8,6 +11,7 @@ public record GetFlightDto(
         String destination,
         int duration,
         String dateOfFlight,
-        GetPlaneDTO plane
+        GetPlaneDTO plane,
+        List<GetPriceDTO> price
 ) {
 }

@@ -8,15 +8,15 @@ import academy.mindera.models.Plane;
 import java.util.List;
 
 public interface PlaneService {
-    CreatePlaneDTO savePlane(CreatePlaneDTO plane);
+    GetPlaneDTO create(CreatePlaneDTO plane);
 
-    List<GetPlaneDTO> findAllPlanes(int page);
+    List<GetPlaneDTO> getAll(int page);
 
-    GetPlaneDTO findPlaneById(Long id) throws PlaneNotFoundException;
+    GetPlaneDTO getById(Long id) throws PlaneNotFoundException;
 
-    void deletePlane(Long id) throws PlaneNotFoundException;
+    void delete(Long id) throws PlaneNotFoundException;
 
-    GetPlaneDTO updatePlane(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException;
+    GetPlaneDTO update(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException;
 
     Plane findById(Long id) throws PlaneNotFoundException;
 }

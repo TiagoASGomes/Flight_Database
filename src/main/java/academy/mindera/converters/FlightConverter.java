@@ -16,6 +16,8 @@ public class FlightConverter {
 
     @Inject
     private PlaneConverter planeConverter;
+    @Inject
+    private PriceConverter priceConverter;
 
     public GetFlightDto fromEntityToGetDto(Flight flight) {
         return new GetFlightDto(
@@ -24,7 +26,9 @@ public class FlightConverter {
                 flight.getDestination(),
                 flight.getDuration(),
                 flight.getDateOfFlight().toString(),
-                planeConverter.fromEntityToGetDto(flight.getPlane())
+                planeConverter.fromEntityToGetDto(flight.getPlane()),
+                priceConverter.fromEntityListToGetDtoList(flight.getPrices().stream().toList())
+
         );
     }
 

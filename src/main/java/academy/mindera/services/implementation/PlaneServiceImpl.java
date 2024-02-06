@@ -24,23 +24,24 @@ public class PlaneServiceImpl implements PlaneService {
     private PlaneConverter planeConverter;
 
     @Override
-    public List<GetPlaneDTO> findAllPlanes(int page) {
+    public List<GetPlaneDTO> getAll(int page) {
         return planeConverter.fromEntityListToGetDtoList(planeRepository.findAll().page(page, PAGE_SIZE).list());
     }
 
     @Override
-    public GetPlaneDTO findPlaneById(Long id) throws PlaneNotFoundException {
+    public GetPlaneDTO getById(Long id) throws PlaneNotFoundException {
         return planeConverter.fromEntityToGetDto(findById(id));
     }
 
     @Override
-    public CreatePlaneDTO savePlane(CreatePlaneDTO plane) {
-        planeRepository.persist(planeConverter.fromCreateDtoToEntity(plane));
-        return plane;
+    public GetPlaneDTO create(CreatePlaneDTO plane) {
+        Plane planeEntity = planeConverter.fromCreateDtoToEntity(plane);
+        planeRepository.persist(planeEntity);
+        return planeConverter.fromEntityToGetDto(planeEntity);
     }
 
     @Override
-    public GetPlaneDTO updatePlane(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException {
+    public GetPlaneDTO update(CreatePlaneDTO plane, Long id) throws PlaneNotFoundException {
         Plane dbPlane = findById(id);
         dbPlane.setPeopleCapacity(plane.peopleCapacity());
         dbPlane.setLuggageCapacity(plane.luggageCapacity());
@@ -51,7 +52,7 @@ public class PlaneServiceImpl implements PlaneService {
     }
 
     @Override
-    public void deletePlane(Long id) throws PlaneNotFoundException {
+    public void delete(Long id) throws PlaneNotFoundException {
         Plane plane = findById(id);
         plane.setDiscontinued(true);
         planeRepository.persist(plane);

@@ -26,6 +26,7 @@ public class FlightConverter {
                 flight.getDestination(),
                 flight.getDuration(),
                 flight.getDateOfFlight().toString(),
+                flight.getAvailableSeats(),
                 planeConverter.fromEntityToGetDto(flight.getPlane()),
                 priceConverter.fromEntityListToGetDtoList(flight.getPrices().stream().toList())
 

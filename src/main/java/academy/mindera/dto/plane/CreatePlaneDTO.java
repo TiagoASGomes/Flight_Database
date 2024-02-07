@@ -21,10 +21,10 @@ public record CreatePlaneDTO(
         @NotNull(message = INVALID_ROWS)
         @Min(value = 1, message = INVALID_ROWS)
         @Max(value = 100, message = INVALID_ROWS)
-        Integer rows,
+        Integer planeRows,
         @NotNull(message = INVALID_COLUMNS)
         @Min(value = 1, message = INVALID_COLUMNS)
         @Max(value = 12, message = INVALID_COLUMNS)
-        Integer columns
+        Integer seatsPerRow
 ) {
 }

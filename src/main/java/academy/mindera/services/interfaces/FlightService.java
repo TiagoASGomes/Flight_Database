@@ -26,7 +26,9 @@ public interface FlightService {
 
     Flight findById(Long id) throws FlightNotFoundException;
 
-    boolean checkIfFullCapacity(Long flightId) throws FlightNotFoundException;
+    boolean checkIfFullCapacity(Long flightId, long occupiedSeats) throws FlightNotFoundException;
+
+    void updateAvailableSeats(Long flightId, long occupiedSeats) throws FlightNotFoundException;
 
     void removePassengers(Long flightId) throws FlightNotFoundException;
 }

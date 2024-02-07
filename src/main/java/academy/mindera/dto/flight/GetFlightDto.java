@@ -11,6 +11,7 @@ public record GetFlightDto(
         String destination,
         int duration,
         String dateOfFlight,
+        int availableSeats,
         GetPlaneDTO plane,
         List<GetPriceDTO> price
 ) {

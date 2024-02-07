@@ -22,6 +22,7 @@ public class Flight {
     private float duration;
     private LocalDateTime dateOfFlight;
     private boolean fullCapacity;
+    private int availableSeats;
     @ManyToOne(fetch = FetchType.EAGER)
     private Plane plane;
     @ManyToMany

@@ -30,7 +30,7 @@ public class FlightServiceImpl implements FlightService {
     private final int PAGE_SIZE = 10;
 
     @Inject
-    private FlightsRepository flightsDetailsRepository;
+    private FlightsRepository flightRepository;
     @Inject
     private FlightConverter flightConverter;
     @Inject
@@ -40,7 +40,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public List<GetFlightDto> getAll(int page) {
-        return flightConverter.fromEntityListToGetDtoList(flightsDetailsRepository.findAll().page(page, PAGE_SIZE).list());
+        return flightConverter.fromEntityListToGetDtoList(flightRepository.findAll().page(page, PAGE_SIZE).list());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FlightServiceImpl implements FlightService {
         }
         origin = origin.toUpperCase();
         destination = destination.toUpperCase();
-        List<Flight> flights = flightsDetailsRepository.search(origin, destination, date).page(page, PAGE_SIZE).list();
+        List<Flight> flights = flightRepository.search(origin, destination, date).page(page, PAGE_SIZE).list();
         if (price < 9999) {
             flights.removeIf(flight -> flight.getPrices().stream().noneMatch(p -> p.getPrice() <= price));
         }
@@ -67,7 +67,8 @@ public class FlightServiceImpl implements FlightService {
         Plane plane = planeService.findById(flight.plane());
         Set<Price> prices = priceService.create(flight.prices());
         Flight flightEntity = flightConverter.fromCreateDtoToEntity(flight, plane, prices);
-        flightsDetailsRepository.persist(flightEntity);
+        flightEntity.setAvailableSeats(plane.getPeopleCapacity());
+        flightRepository.persist(flightEntity);
         return flightConverter.fromEntityToGetDto(flightEntity);
     }
 
@@ -81,35 +82,31 @@ public class FlightServiceImpl implements FlightService {
         dbFlight.setPlane(planeService.findById(flight.plane()));
         Set<Price> prices = priceService.create(flight.prices());
         dbFlight.setPrices(prices);
-        flightsDetailsRepository.persist(dbFlight);
+        flightRepository.persist(dbFlight);
         return flightConverter.fromEntityToGetDto(dbFlight);
     }
 
     @Override
     public void delete(Long id) throws FlightNotFoundException {
         findById(id);
-        flightsDetailsRepository.deleteById(id);
+        flightRepository.deleteById(id);
     }
 
     @Override
     public Flight findById(Long id) throws FlightNotFoundException {
-        return flightsDetailsRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException(FLIGHT_ID_NOT_FOUND + id));
+        return flightRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException(FLIGHT_ID_NOT_FOUND + id));
     }
 
     @Override
-    public boolean checkIfFullCapacity(Long flightId) throws FlightNotFoundException {
+    public boolean checkIfFullCapacity(Long flightId, long occupiedSeats) throws FlightNotFoundException {
         Flight flight = findById(flightId);
-        if (flight.getBookings().size() >= flight.getPlane().getPeopleCapacity()) {
-            flight.setFullCapacity(true);
-            flightsDetailsRepository.persist(flight);
-        }
-        return flight.isFullCapacity();
+        return occupiedSeats >= flight.getPlane().getPeopleCapacity();
     }
 
     @Override
-    public void removePassengers(Long flightId) throws FlightNotFoundException {
+    public void updateAvailableSeats(Long flightId, long occupiedSeats) throws FlightNotFoundException {
         Flight flight = findById(flightId);
-        flight.setFullCapacity(false);
-        flightsDetailsRepository.persist(flight);
+        flight.setAvailableSeats((int) (flight.getPlane().getPeopleCapacity() - occupiedSeats));
+        flightRepository.persist(flight);
     }
 }

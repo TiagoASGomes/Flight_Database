@@ -2,13 +2,14 @@ package academy.mindera.services.interfaces;
 
 import academy.mindera.dto.plane.CreatePlaneDTO;
 import academy.mindera.dto.plane.GetPlaneDTO;
+import academy.mindera.exceptions.ValidationException;
 import academy.mindera.exceptions.plane.PlaneNotFoundException;
 import academy.mindera.models.Plane;
 
 import java.util.List;
 
 public interface PlaneService {
-    GetPlaneDTO create(CreatePlaneDTO plane);
+    GetPlaneDTO create(CreatePlaneDTO plane) throws ValidationException;
 
     List<GetPlaneDTO> getAll(int page);
 

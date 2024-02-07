@@ -30,5 +30,4 @@ public interface FlightService {
 
     void updateAvailableSeats(Long flightId, long occupiedSeats) throws FlightNotFoundException;
 
-    void removePassengers(Long flightId) throws FlightNotFoundException;
 }

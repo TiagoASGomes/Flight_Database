@@ -17,7 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Transactional
-public class FlightResource {
+public class FlightController {
 
     @Inject
     FlightService flightService;

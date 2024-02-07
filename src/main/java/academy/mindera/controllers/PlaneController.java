@@ -1,6 +1,7 @@
 package academy.mindera.controllers;
 
 import academy.mindera.dto.plane.CreatePlaneDTO;
+import academy.mindera.exceptions.ValidationException;
 import academy.mindera.exceptions.plane.PlaneNotFoundException;
 import academy.mindera.services.interfaces.PlaneService;
 import jakarta.inject.Inject;
@@ -9,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @Path("api/v1/planes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,8 +24,6 @@ public class PlaneController {
         return Response.ok(planeService.getAll(page)).build();
     }
 
-    //TODO get all with filter
-
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) throws PlaneNotFoundException {
@@ -33,13 +31,13 @@ public class PlaneController {
     }
 
     @POST
-    public Response create(@Valid @RequestBody CreatePlaneDTO plane) {
+    public Response create(@Valid CreatePlaneDTO plane) throws ValidationException {
         return Response.ok(planeService.create(plane)).status(Response.Status.CREATED).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, @Valid @RequestBody CreatePlaneDTO plane) throws PlaneNotFoundException {
+    public Response update(@PathParam("id") Long id, @Valid CreatePlaneDTO plane) throws PlaneNotFoundException {
         return Response.ok(planeService.update(plane, id)).build();
     }
 

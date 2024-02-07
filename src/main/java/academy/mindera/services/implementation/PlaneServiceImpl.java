@@ -3,6 +3,7 @@ package academy.mindera.services.implementation;
 import academy.mindera.converters.PlaneConverter;
 import academy.mindera.dto.plane.CreatePlaneDTO;
 import academy.mindera.dto.plane.GetPlaneDTO;
+import academy.mindera.exceptions.ValidationException;
 import academy.mindera.exceptions.plane.PlaneNotFoundException;
 import academy.mindera.models.Plane;
 import academy.mindera.repositories.PlaneRepository;
@@ -36,7 +37,7 @@ public class PlaneServiceImpl implements PlaneService {
     }
 
     @Override
-    public GetPlaneDTO create(CreatePlaneDTO plane) {
+    public GetPlaneDTO create(CreatePlaneDTO plane) throws ValidationException {
         Plane planeEntity = planeConverter.fromCreateDtoToEntity(plane);
         planeRepository.persist(planeEntity);
         return planeConverter.fromEntityToGetDto(planeEntity);

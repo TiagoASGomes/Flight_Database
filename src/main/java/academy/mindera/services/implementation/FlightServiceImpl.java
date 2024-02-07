@@ -100,13 +100,20 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public boolean checkIfFullCapacity(Long flightId, long occupiedSeats) throws FlightNotFoundException {
         Flight flight = findById(flightId);
-        return occupiedSeats >= flight.getPlane().getPeopleCapacity();
+        if (occupiedSeats >= flight.getPlane().getPeopleCapacity()) {
+            flight.setFullCapacity(true);
+            flightRepository.persist(flight);
+        }
+        return flight.isFullCapacity();
     }
 
     @Override
     public void updateAvailableSeats(Long flightId, long occupiedSeats) throws FlightNotFoundException {
         Flight flight = findById(flightId);
         flight.setAvailableSeats((int) (flight.getPlane().getPeopleCapacity() - occupiedSeats));
+        if (occupiedSeats < flight.getPlane().getPeopleCapacity()) {
+            flight.setFullCapacity(false);
+        }
         flightRepository.persist(flight);
     }
 }

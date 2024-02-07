@@ -10,7 +10,7 @@ import static academy.mindera.util.Messages.INVALID_PRICE;
 
 public record CreatePriceDto(
         @NotNull(message = INVALID_CLASS_NAME)
-        @Pattern(regexp = "^[A-Za-z_0-9 ]+$", message = INVALID_CLASS_NAME)
+        @Pattern(regexp = "^[A-Z]+$", message = INVALID_CLASS_NAME)
         String className,
         @NotNull(message = INVALID_PRICE)
         @Min(value = 1, message = INVALID_PRICE)

@@ -9,7 +9,7 @@ public record GetFlightDto(
         long id,
         String origin,
         String destination,
-        int duration,
+        Float duration,
         String dateOfFlight,
         int availableSeats,
         GetPlaneDTO plane,

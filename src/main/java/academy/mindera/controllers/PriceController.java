@@ -10,13 +10,12 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @Path("/api/v1/prices")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Transactional
-public class PriceResource {
+public class PriceController {
     @Inject
     PriceService pricesDetailsService;
 
@@ -33,7 +32,7 @@ public class PriceResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, @Valid @RequestBody CreatePriceDto price) throws PriceNotFoundException {
+    public Response update(@PathParam("id") Long id, @Valid CreatePriceDto price) throws PriceNotFoundException {
         return Response.ok(pricesDetailsService.update(price, id)).build();
     }
 

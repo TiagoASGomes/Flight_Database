@@ -18,8 +18,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+
+import static academy.mindera.util.Messages.FLIGHT_ID_NOT_FOUND;
 
 @ApplicationScoped
 @Transactional
@@ -38,6 +41,20 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<GetFlightDto> getAll(int page) {
         return flightConverter.fromEntityListToGetDtoList(flightsDetailsRepository.findAll().page(page, PAGE_SIZE).list());
+    }
+
+    @Override
+    public List<GetFlightDto> search(String origin, String destination, String date, int page, int price) {
+        if (date.isEmpty()) {
+            date = LocalDateTime.now().toString();
+        }
+        origin = origin.toUpperCase();
+        destination = destination.toUpperCase();
+        List<Flight> flights = flightsDetailsRepository.search(origin, destination, date).page(page, PAGE_SIZE).list();
+        if (price < 9999) {
+            flights.removeIf(flight -> flight.getPrices().stream().noneMatch(p -> p.getPrice() <= price));
+        }
+        return flightConverter.fromEntityListToGetDtoList(flights);
     }
 
     @Override
@@ -76,12 +93,23 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Flight findById(Long id) throws FlightNotFoundException {
-        return flightsDetailsRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException("Flight with ID " + id + " not found."));
+        return flightsDetailsRepository.findByIdOptional(id).orElseThrow(() -> new FlightNotFoundException(FLIGHT_ID_NOT_FOUND + id));
     }
 
     @Override
     public boolean checkIfFullCapacity(Long flightId) throws FlightNotFoundException {
         Flight flight = findById(flightId);
-        return flight.getBookings().size() >= flight.getPlane().getPeopleCapacity();
+        if (flight.getBookings().size() >= flight.getPlane().getPeopleCapacity()) {
+            flight.setFullCapacity(true);
+            flightsDetailsRepository.persist(flight);
+        }
+        return flight.isFullCapacity();
+    }
+
+    @Override
+    public void removePassengers(Long flightId) throws FlightNotFoundException {
+        Flight flight = findById(flightId);
+        flight.setFullCapacity(false);
+        flightsDetailsRepository.persist(flight);
     }
 }

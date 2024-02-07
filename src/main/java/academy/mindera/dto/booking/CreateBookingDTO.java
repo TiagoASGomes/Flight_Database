@@ -1,10 +1,26 @@
 package academy.mindera.dto.booking;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
+import static academy.mindera.util.Messages.*;
+
 public record CreateBookingDTO(
+        @NotNull(message = INVALID_NAME)
+        @Pattern(regexp = "^[A-Za-z ]+$", message = INVALID_NAME)
         String fName,
+        @NotNull(message = INVALID_EMAIL)
+        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = INVALID_EMAIL)
         String email,
+        @NotNull(message = INVALID_PHONE_NUMBER)
+        @Pattern(regexp = "^((\\+351|00351|351)?) ?(9[3621])\\d{7}$", message = INVALID_PHONE_NUMBER)
         String phone,
+        @NotNull(message = INVALID_FLIGHT_ID)
+        @Min(value = 1, message = INVALID_FLIGHT_ID)
         Long flightId,
+        @NotNull(message = INVALID_PRICE_ID)
+        @Min(value = 1, message = INVALID_PRICE_ID)
         Long priceId
 ) {
 }

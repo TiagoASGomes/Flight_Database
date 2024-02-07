@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
+import static academy.mindera.util.Messages.PLANE_ID_NOT_FOUND;
+
 @ApplicationScoped
 @Transactional
 public class PlaneServiceImpl implements PlaneService {
@@ -62,6 +64,6 @@ public class PlaneServiceImpl implements PlaneService {
 
     @Override
     public Plane findById(Long id) throws PlaneNotFoundException {
-        return planeRepository.findByIdOptional(id).orElseThrow(() -> new PlaneNotFoundException("Plane with ID " + id + " not found."));
+        return planeRepository.findByIdOptional(id).orElseThrow(() -> new PlaneNotFoundException(PLANE_ID_NOT_FOUND + id));
     }
 }

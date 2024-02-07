@@ -16,6 +16,8 @@ public interface FlightService {
 
     List<GetFlightDto> getAll(int page);
 
+    List<GetFlightDto> search(String origin, String destination, String date, int page, int price);
+
     GetFlightDto getById(Long id) throws FlightNotFoundException;
 
     void delete(Long id) throws FlightNotFoundException;
@@ -25,4 +27,6 @@ public interface FlightService {
     Flight findById(Long id) throws FlightNotFoundException;
 
     boolean checkIfFullCapacity(Long flightId) throws FlightNotFoundException;
+
+    void removePassengers(Long flightId) throws FlightNotFoundException;
 }

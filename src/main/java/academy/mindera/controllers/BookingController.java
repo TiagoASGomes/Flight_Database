@@ -26,7 +26,7 @@ public class BookingController {
     private BookingService bookingService;
 
     @GET
-    public Response getById(@QueryParam("page") int page) {
+    public Response getAll(@QueryParam("page") int page) {
         return Response.ok(bookingService.getAll(page)).build();
     }
 

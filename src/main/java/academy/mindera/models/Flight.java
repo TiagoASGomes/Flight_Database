@@ -19,8 +19,9 @@ public class Flight {
     private Long id;
     private String origin;
     private String destination;
-    private int duration;
+    private float duration;
     private LocalDateTime dateOfFlight;
+    private boolean fullCapacity;
     @ManyToOne(fetch = FetchType.EAGER)
     private Plane plane;
     @ManyToMany

@@ -20,6 +20,9 @@ import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static academy.mindera.util.Messages.BOOKING_ID_NOT_FOUND;
+import static academy.mindera.util.Messages.FULL_FLIGHT;
+
 @ApplicationScoped
 public class BookingServiceImpl implements BookingService {
     private static final int PAGE_SIZE = 10;
@@ -49,7 +52,8 @@ public class BookingServiceImpl implements BookingService {
         for (CreateBookingDTO BookingDTO : booking) {
             if (flightService.checkIfFullCapacity(BookingDTO.flightId())) {
                 bookingList.forEach(bookingEntity -> bookingRepository.deleteById(bookingEntity.id()));
-                throw new FlightFullException("Flight is full");
+                flightService.removePassengers(BookingDTO.flightId());
+                throw new FlightFullException(FULL_FLIGHT);
             }
             bookingList.add(create(BookingDTO));
         }
@@ -85,10 +89,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking findById(Long id) throws BookingNotFoundException {
-        return bookingRepository.findByIdOptional(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+        return bookingRepository.findByIdOptional(id).orElseThrow(() -> new BookingNotFoundException(BOOKING_ID_NOT_FOUND + id));
     }
-
-
+    
     private String calcSeatNumber(Flight flight) {
         long nextSeatNumber = bookingRepository.count("flight", flight) + 1;
         long row = (nextSeatNumber - 1) / flight.getPlane().getColumns() + 1;

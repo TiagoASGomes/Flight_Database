@@ -28,6 +28,12 @@ public class FlightResource {
     }
 
     @GET
+    @Path("/search/{origin}/{destination}/{date}/{price}")
+    public Response search(@PathParam("origin") String origin, @PathParam("destination") String destination, @PathParam("date") @DefaultValue("") String date, @PathParam("price") @DefaultValue("9999") int price, @QueryParam("page") int page) {
+        return Response.ok(flightService.search(origin, destination, date, price, page)).build();
+    }
+
+    @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") Long id) throws FlightNotFoundException {
         return Response.ok(flightService.getById(id)).build();

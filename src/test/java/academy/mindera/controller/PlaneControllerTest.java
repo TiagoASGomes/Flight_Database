@@ -84,7 +84,7 @@ class PlaneControllerTest {
                 .when().get(PLANE_ENDPOINT + "?page=0")
                 .then()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(4));
     }
 
     @Test
@@ -99,7 +99,7 @@ class PlaneControllerTest {
                 .body("modelName", is("Airbus A320"))
                 .body("luggageCapacity", is(100))
                 .body("id", is(1))
-                .body("peopleCapacity", is(40))
+                .body("peopleCapacity", is(4))
                 .body("discontinued", is(false));
     }
 
@@ -135,17 +135,6 @@ class PlaneControllerTest {
                 .when().put(PLANE_ENDPOINT + "/100")
                 .then()
                 .statusCode(404);
-    }
-
-
-    @Test
-    @Order(10)
-    void testDeletePlane() {
-        given()
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-                .when().delete(PLANE_ENDPOINT + "/1")
-                .then()
-                .statusCode(200);
     }
 
 

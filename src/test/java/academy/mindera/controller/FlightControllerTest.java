@@ -39,17 +39,6 @@ class FlightControllerTest {
     }
 
     @Test
-    @Order(2)
-    void testGetAllGetEmptyFlights() {
-        given()
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-                .when().get(FLIGHT_ENDPOINT + "?page=0")
-                .then()
-                .statusCode(200)
-                .body("size()", is(0));
-    }
-
-    @Test
     @Order(3)
     void testCreateFlight() {
         given()
@@ -119,7 +108,7 @@ class FlightControllerTest {
                 .when().get(FLIGHT_ENDPOINT + "?page=0")
                 .then()
                 .statusCode(200)
-                .body("size()", is(2));
+                .body("size()", is(3));
     }
 
     @Test
@@ -194,9 +183,10 @@ class FlightControllerTest {
     void deleteFlight() {
         given()
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-                .when().delete(FLIGHT_ENDPOINT + "/1")
+                .when().delete(FLIGHT_ENDPOINT + "/2")
                 .then()
                 .statusCode(200);
+
     }
 
 

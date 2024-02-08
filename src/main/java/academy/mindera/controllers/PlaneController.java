@@ -63,6 +63,7 @@ public class PlaneController {
             @APIResponse(responseCode = "404", description = "Plane not found")
     })
     @DELETE
+    @Transactional
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) throws PlaneNotFoundException {
         planeService.delete(id);

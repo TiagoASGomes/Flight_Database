@@ -56,6 +56,7 @@ public class PlaneServiceImpl implements PlaneService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws PlaneNotFoundException {
         Plane plane = findById(id);
         plane.setDiscontinued(true);

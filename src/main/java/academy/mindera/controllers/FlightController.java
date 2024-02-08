@@ -77,6 +77,7 @@ public class FlightController {
             @APIResponse(responseCode = "404", description = "Flight not found")
     })
     @DELETE
+    @Transactional
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) throws FlightNotFoundException {
         flightService.delete(id);

@@ -89,6 +89,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws BookingNotFoundException {
         findById(id);
         bookingRepository.deleteById(id);

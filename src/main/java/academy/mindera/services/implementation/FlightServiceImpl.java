@@ -90,6 +90,7 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) throws FlightNotFoundException {
         findById(id);
         flightRepository.deleteById(id);

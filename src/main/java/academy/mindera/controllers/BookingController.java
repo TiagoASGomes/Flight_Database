@@ -71,6 +71,7 @@ public class BookingController {
             @APIResponse(responseCode = "200", description = "Booking deleted"),
             @APIResponse(responseCode = "404", description = "Booking not found")})
     @DELETE
+    @Transactional
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) throws BookingNotFoundException {
         bookingService.delete(id);

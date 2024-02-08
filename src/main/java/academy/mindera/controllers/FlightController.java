@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @Path("/api/v1/flights")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,13 +39,13 @@ public class FlightController {
     }
 
     @POST
-    public Response create(@Valid @RequestBody CreateFlightDTO flight) throws PriceNotFoundException, PlaneNotFoundException {
+    public Response create(@Valid CreateFlightDTO flight) throws PriceNotFoundException, PlaneNotFoundException {
         return Response.ok(flightService.create(flight)).status(Response.Status.CREATED).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, @Valid @RequestBody CreateFlightDTO flight) throws FlightNotFoundException, PriceNotFoundException, PlaneNotFoundException {
+    public Response update(@PathParam("id") Long id, @Valid CreateFlightDTO flight) throws FlightNotFoundException, PriceNotFoundException, PlaneNotFoundException {
         return Response.ok(flightService.update(flight, id)).build();
     }
 

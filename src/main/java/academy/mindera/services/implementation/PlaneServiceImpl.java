@@ -18,7 +18,7 @@ import static academy.mindera.util.Messages.PLANE_ID_NOT_FOUND;
 @ApplicationScoped
 @Transactional
 public class PlaneServiceImpl implements PlaneService {
-    private final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 10;
 
     @Inject
     private PlaneRepository planeRepository;

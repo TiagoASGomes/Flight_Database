@@ -21,7 +21,7 @@ import static academy.mindera.util.Messages.PRICE_IN_USE;
 @ApplicationScoped
 @Transactional
 public class PriceServiceImpl implements PriceService {
-    private final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 10;
     @Inject
     private PricesRepository pricesRepository;
     @Inject
@@ -71,7 +71,7 @@ public class PriceServiceImpl implements PriceService {
     public Price findById(Long id) throws PriceNotFoundException {
         return pricesRepository.findByIdOptional(id).orElseThrow(() -> new PriceNotFoundException(PRICE_ID_NOT_FOUND + id));
     }
-    
+
     private void checkIfPriceIsInUse(Price price) throws PriceInUseException {
         if (price.getFlights() != null && !price.getFlights().isEmpty()) {
             throw new PriceInUseException(PRICE_IN_USE + price.getId());

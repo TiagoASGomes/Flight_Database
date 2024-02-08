@@ -113,5 +113,40 @@ class PlaneControllerTest {
                 .statusCode(404);
     }
 
+    @Test
+    @Order(8)
+    void testUpdatePlane() {
+        given()
+                .body(Plane.builder().luggageCapacity(200).companyOwner("Ryanair").modelName("Boeing 737").planeRows(8).seatsPerRow(6).build())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+                .when().put(PLANE_ENDPOINT + "/2")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    @Order(9)
+    void testUpdatePlaneNotFound() {
+        given()
+                .body(Plane.builder().luggageCapacity(200).companyOwner("Ryanair").modelName("Boeing 737").planeRows(8).seatsPerRow(6).build())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+                .when().put(PLANE_ENDPOINT + "/100")
+                .then()
+                .statusCode(404);
+    }
+
+
+    @Test
+    @Order(10)
+    void testDeletePlane() {
+        given()
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+                .when().delete(PLANE_ENDPOINT + "/1")
+                .then()
+                .statusCode(200);
+    }
+
 
 }

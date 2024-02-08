@@ -16,6 +16,7 @@ import academy.mindera.services.interfaces.FlightService;
 import academy.mindera.services.interfaces.PriceService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,13 +74,18 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
+    @Transactional
     public GetBookingDto update(CreateBookingDTO booking, Long id) throws BookingNotFoundException, FlightNotFoundException, PriceNotFoundException {
         Price price = priceService.findById(booking.priceId());
         Flight flight = flightService.findById(booking.flightId());
-        Booking newBooking = bookingConverter.fromCreateDtoToEntity(booking, flight, price);
-        newBooking.setId(id);
-        bookingRepository.persist(newBooking);
-        return bookingConverter.fromEntityToGetDto(newBooking);
+        Booking dbBooking = findById(id);
+        dbBooking.setFName(booking.fName());
+        dbBooking.setEmail(booking.email());
+        dbBooking.setPhone(booking.phone());
+        dbBooking.setPrice(price);
+        dbBooking.setFlight(flight);
+        bookingRepository.persist(dbBooking);
+        return bookingConverter.fromEntityToGetDto(dbBooking);
     }
 
     @Override

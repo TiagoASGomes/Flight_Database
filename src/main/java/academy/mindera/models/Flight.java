@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Entity
+@Entity(name = "flights")
 @Getter
 @Setter
 @NoArgsConstructor

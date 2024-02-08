@@ -14,13 +14,13 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/flights
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=secret
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:mysql://mysql_db:3306/flights
+      - QUARKUS_DATASOURCE_USERNAME=root
+      - QUARKUS_DATASOURCE_PASSWORD=secret
     ports:
       - "8081:8081"
     restart: on-failure
-    links:
+    depends_on:
       - mysql_db
 volumes:
   mysql_db_data:

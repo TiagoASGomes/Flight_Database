@@ -16,7 +16,7 @@ public interface FlightService {
 
     List<GetFlightDto> getAll(int page);
 
-    List<GetFlightDto> search(String origin, String destination, String date, int page, int price);
+    List<GetFlightDto> search(String origin, String destination, String date, int price, int page);
 
     GetFlightDto getById(Long id) throws FlightNotFoundException;
 

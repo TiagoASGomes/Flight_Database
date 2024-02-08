@@ -44,7 +44,7 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public List<GetFlightDto> search(String origin, String destination, String date, int page, int price) {
+    public List<GetFlightDto> search(String origin, String destination, String date, int price, int page) {
         LocalDateTime searchDate;
         if (date.isEmpty()) {
             searchDate = LocalDateTime.now();
@@ -53,7 +53,7 @@ public class FlightServiceImpl implements FlightService {
         }
         origin = origin.toUpperCase();
         destination = destination.toUpperCase();
-        List<Flight> flights = flightRepository.search(origin, destination, searchDate).page(page, PAGE_SIZE).list();
+        List<Flight> flights = flightRepository.search(origin, destination, searchDate, page);
         if (price < 9999) {
             flights.removeIf(flight -> flight.getPrices().stream().noneMatch(p -> p.getPrice() <= price));
         }

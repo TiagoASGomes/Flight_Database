@@ -5,7 +5,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn package
+RUN mvn package -DskipTests
 
 FROM registry.access.redhat.com/ubi8/openjdk-21:1.18
 

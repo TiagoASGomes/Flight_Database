@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: academy.mindera.controller.FlightControllerTest
--------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.359 s -- in academy.mindera.controller.FlightControllerTest
